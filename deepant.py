@@ -45,10 +45,10 @@ class DataModule(pl.LightningDataModule):
         self.dataset = TrafficDataset(self.df, self.seq_len)
         
     def train_dataloader(self):
-        return DataLoader(self.dataset, batch_size = 32, num_workers = 10, pin_memory = True, shuffle = True)
+        return DataLoader(self.dataset, batch_size = 32, num_workers = 8, pin_memory = True, shuffle = True)
     
     def predict_dataloader(self):
-        return DataLoader(self.dataset, batch_size = 1, num_workers = 10, pin_memory = True, shuffle = False)
+        return DataLoader(self.dataset, batch_size = 1, num_workers = 8, pin_memory = True, shuffle = False)
 
 
 class DeepAnt(nn.Module):
@@ -69,8 +69,12 @@ class DeepAnt(nn.Module):
         
         self.flatten = nn.Flatten()
         
+        sh = self.flatten(self.convblock2(self.convblock1(torch.randn(32,1,seq_len))))
+        #print(sh.shape[1])
+		
         self.denseblock = nn.Sequential(
-            nn.Linear(32, 40),
+            #nn.Linear(32, 40),
+            nn.Linear(sh.shape[1], 40),
             #nn.Linear(96, 40), # for SEQL_LEN = 20
             nn.ReLU(inplace=True),
             nn.Dropout(p=0.25),
@@ -81,6 +85,7 @@ class DeepAnt(nn.Module):
         x = self.convblock1(x)
         x = self.convblock2(x)
         x = self.flatten(x)
+        #print(x.shape, flush=True)
         x = self.denseblock(x)
         x = self.out(x)
         return x
