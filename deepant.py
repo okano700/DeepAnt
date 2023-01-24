@@ -45,10 +45,10 @@ class DataModule(pl.LightningDataModule):
         self.dataset = TrafficDataset(self.df, self.seq_len)
         
     def train_dataloader(self):
-        return DataLoader(self.dataset, batch_size = 32, num_workers = 8, pin_memory = True, shuffle = True)
+        return DataLoader(self.dataset, batch_size = 32, num_workers = 4, pin_memory = True, shuffle = True)
     
     def predict_dataloader(self):
-        return DataLoader(self.dataset, batch_size = 1, num_workers = 8, pin_memory = True, shuffle = False)
+        return DataLoader(self.dataset, batch_size = 1, num_workers = 4, pin_memory = True, shuffle = False)
 
 
 class DeepAnt(nn.Module):
